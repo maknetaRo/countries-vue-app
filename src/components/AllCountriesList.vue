@@ -11,21 +11,25 @@
         <th>languages</th>
         <th>currencies</th>
       </tr>
-      <tr v-for="country in countries" :key="country.name">
-        <td>{{ country.name }}</td>
-        <td>{{ country.capital }}</td>
-        <td>{{ country.flag }}</td>
-        <td>{{ country.population }}</td>
-        <td>{{ country.timezones[0] }}</td>
-        <td>{{ country.languages[0].name }}</td>
-        <td>{{ country.currencies[0].code }}</td>
-      </tr>
+
+      <CountryRow
+        v-for="country in countries"
+        :key="country.name"
+        :name="country.name"
+        :capital="country.capital"
+        :flag="country.flag"
+        :population="country.population"
+        :timezone="country.timezones[0]"
+        :language="country.languages[0].name"
+        :currency="country.currencies[0].code"
+      />
     </table>
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import CountryRow from "./CountryRow.vue";
 
 export default {
   name: "all-countries-list",
@@ -34,14 +38,25 @@ export default {
       countries: [],
     };
   },
-  created() {
-    axios
-      .get("https://restcountries.eu/rest/v2/all")
-      .then((response) => {
-        this.countries = response.data;
-        console.log(response.data);
-      })
-      .catch((error) => console.log(error));
+  async created() {
+    const config = {
+      headers: {
+        Accept: "application/json",
+      },
+    };
+    try {
+      const res = await axios.get(
+        "https://restcountries.eu/rest/v2/all",
+        config
+      );
+      this.countries = res.data;
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  components: {
+    CountryRow,
   },
 };
 </script>
